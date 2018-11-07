@@ -6,10 +6,10 @@ import sys
 from CGenre import Genre
 
 def main():
-
-    sound = "Single-Ladies.mp3"#AudioSegment.from_mp3("Single-Ladies.mp3")
+    path = '/Users/yakwtfgo/Documents/CMU-ECE/Fall-2018/18794/Project/Songs/Single-Ladies.mp3'
+    sound = path #AudioSegment.from_mp3("Single-Ladies.mp3")
     genre = Genre(sound)
-    print(genre.loud())
+    #print(genre.loud())
     
     """
     # get the frame rate
