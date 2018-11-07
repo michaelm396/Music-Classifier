@@ -4,12 +4,12 @@ from pydub import AudioSegment #(pip install pydub and ffmeg)
 from pydub.playback import play #(pip install pyaudio)
 import sys
 from CGenre import Genre
+import os
 
 def main():
-    path = '/Users/yakwtfgo/Documents/CMU-ECE/Fall-2018/18794/Project/Songs/Single-Ladies.mp3'
-    sound = path #AudioSegment.from_mp3("Single-Ladies.mp3")
-    genre = Genre(sound)
-    #print(genre.loud())
+    song = '/Songs/Single-Ladies.mp3'
+    path = os.path.dirname(os.getcwd()) + song
+    genre = Genre(path)
     
     """
     # get the frame rate
