@@ -55,7 +55,6 @@ def knn(train,test,k):
                         idx += 1
                     kNearestNeighbors = kNearestNeighbors[1:idx] + [(dist,p.classification)] + kNearestNeighbors[idx:]
 
-        print(kNearestNeighbors)
 
         #find closest class to this point
         #create dict of class to points,total dist
@@ -91,9 +90,9 @@ def knn(train,test,k):
     return outputList
 
 
-testTrain = [[0,1,1,"A"],[0,2,1,"A"],[5,5,1,"B"],[4,6,1,"B"],[1,2,1,"B"],[4,4,1,"A"]]
-testTest = [[0,0,1,"A"],[7,7,1,"B"],[3,3,1,"A"]]
-print(knn(testTrain,testTest,2))
+#testTrain = [[0,1,1,"A"],[0,2,1,"A"],[5,5,1,"B"],[4,6,1,"B"],[1,2,1,"B"],[4,4,1,"A"]]
+#testTest = [[0,0,1,"A"],[7,7,1,"B"],[3,3,1,"A"]]
+#print(knn(testTrain,testTest,3))
 
 
 
