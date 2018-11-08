@@ -1,10 +1,4 @@
 from __future__ import division
-try:
-        from pydub import AudioSegment #pip install pydub and ffmeg
-except ImportError:
-        logger.exception('"pydub" is a required Python dependency for')
-        raise
-import sys
 from CGenre import Genre
 import os
 
@@ -14,8 +8,7 @@ def songToFeatures(filePath,genre):
     #song = '/Songs/Single-Ladies.mp3' 
     #path = os.path.dirname(os.getcwd()) + song
     #song = songToFeatures(path,"pop")
-
-    sound = AudioSegment.from_mp3(filePath)
+    #sound = AudioSegment.from_mp3(filePath)
     Features = Genre(filePath)
     maxAmplitude = Features.max_amplitude()
     loudness = Features.loud()

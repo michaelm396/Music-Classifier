@@ -1,8 +1,9 @@
 from __future__ import division
+import logging
 try:
 		from pydub import AudioSegment #pip install pydub and ffmeg
 except ImportError:
-		logger.exception('"pydub" is a required Python dependency for')
+		logging.exception('"pydub" is a required Python dependency for')
 		raise
 from pydub.playback import play #pip install pyaudio
 
