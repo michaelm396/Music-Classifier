@@ -1,6 +1,7 @@
 from simpleKnnClassifier import knn
 from parseAudioFile import songToFeatures
 import os
+import pdb
 
 def main():
     #go through songs in data set and construct train and test lists
@@ -10,10 +11,16 @@ def main():
     test = []
     song = 'Songs/Single-Ladies.mp3'
     L = songToFeatures(song,"pop")
+<<<<<<< Updated upstream
     train += [L]
     test += [L]
+=======
+    train += L
+    test += L
+    print(L)
+>>>>>>> Stashed changes
 
-
+    pdb.set_trace()
     #run knn and output results
     print(knn(train,test,3))
 

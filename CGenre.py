@@ -33,9 +33,24 @@ class Genre(object):
     """
     def duration(self):
         self.durationlen = len(self.sound) / 1000.0
+        return self.durationlen
 
     """
-    plays song
+    obtains the frame_rate of mp3 file
+    """
+    def frame_rate(self):
+        self.framerate = self.sound.frame_rate
+        return self.framerate
+
+    """
+    obtains file size of the mp3 file
+    """
+    def sample_size(self):
+        self.samplesize = self.sound.sample_width
+        return self.samplesize
+
+    """
+    plays song file (on PC)
     """
     def play_song(self):
         play(self.sound)
