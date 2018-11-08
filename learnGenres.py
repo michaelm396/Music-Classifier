@@ -10,8 +10,8 @@ def main():
     test = []
     song = 'Songs/Single-Ladies.mp3'
     L = songToFeatures(song,"pop")
-    train += L
-    test += L
+    train += [L]
+    test += [L]
 
 
     #run knn and output results
