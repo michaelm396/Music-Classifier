@@ -20,6 +20,7 @@ def main():
                     except:
                         continue
     print(test)
+    #print(songToFeatures("Songs/pop/Single-Ladies.mp3","pop"))
 
     print(knn(train,test,3))
 

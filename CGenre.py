@@ -14,6 +14,7 @@ class Genre(object):
     """
     def __init__(self,song):
         self.sound = AudioSegment.from_mp3(song)
+        #print(self.sound.raw_data)
 
     """
     obtains maximum aplitude of mp3 song file
@@ -49,6 +50,19 @@ class Genre(object):
     def sample_size(self):
         self.samplesize = self.sound.sample_width
         return self.samplesize
+
+    def parseBySecond(self):
+        newArr = []
+        for i in range(len(self.sound)):
+            newArr += [(self.sound[i]).rms]
+        avgChange = 0
+        for i in range(1,len(newArr)):
+            avgChange += abs(newArr[i] - newArr[i-1])
+        avgChange = avgChange/len(newArr)
+        return avgChange
+    #def raw_data(self):
+    #    self.rawdata = self.sound.raw_data
+    #    return self.rawdata
 
     """
     plays song file (on PC)

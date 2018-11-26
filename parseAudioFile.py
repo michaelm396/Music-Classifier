@@ -10,7 +10,11 @@ def songToFeatures(filePath,genre):
     maxAmplitude = Features.max_amplitude()
     loudness = Features.loud()
     duration_len = Features.duration()
-    
-    resArr = [maxAmplitude,loudness,duration_len,genre]
+    avgChange = Features.parseBySecond()
+    #raw_data = Features.raw_data()
+    #print(raw_data)
+
+    resArr = [maxAmplitude,loudness,duration_len,avgChange,genre]
+    print(resArr)
 
     return resArr
