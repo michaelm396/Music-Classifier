@@ -59,6 +59,16 @@ class Genre(object):
             avgChange += abs(newArr[i] - newArr[i-1])
         avgChange = avgChange/len(newArr)
         return avgChange
+        
+    def amplitudePerMili(self):
+        newArr = []
+        for i in range(len(self.sound)):
+            newArr += [(self.sound[i]).max]
+        avgChange = 0
+        for i in range(1,len(newArr)):
+            avgChange += abs(newArr[i] - newArr[i-1])
+        avgChange = avgChange/len(newArr)
+        return avgChange
 
     """
     plays song file (on PC)

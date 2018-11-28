@@ -22,7 +22,7 @@ def main():
     print(test)
     #print(songToFeatures("Songs/pop/Single-Ladies.mp3","pop"))
 
-    print(knn(train,test,3))
+    print(knn(train,test,5))
 
 if __name__ == "__main__":
     main()
