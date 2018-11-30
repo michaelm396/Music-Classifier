@@ -1,5 +1,6 @@
 from __future__ import division
 import logging
+
 try:
 		from pydub import AudioSegment #pip install pydub and ffmeg
 except ImportError:
@@ -59,7 +60,8 @@ class Genre(object):
             avgChange += abs(newArr[i] - newArr[i-1])
         avgChange = avgChange/len(newArr)
         return avgChange
-        
+
+
     def amplitudePerMili(self):
         newArr = []
         for i in range(len(self.sound)):
@@ -69,6 +71,16 @@ class Genre(object):
             avgChange += abs(newArr[i] - newArr[i-1])
         avgChange = avgChange/len(newArr)
         return avgChange
+
+    """
+    calculates beats per minute of the sound file
+    """
+    def beats_per_minute(self):
+        length = self.duration(self.sound)
+        measures = 1
+        beat = 1
+        self.bpm = round(60000/((float(length/beat)/measures)/4),2)
+    return self.bpm
 
     """
     plays song file (on PC)
