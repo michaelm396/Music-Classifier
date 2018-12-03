@@ -7,6 +7,9 @@ except ImportError:
 		logging.exception('"pydub" is a required Python dependency for')
 		raise
 from pydub.playback import play #pip install pyaudio
+from pydub.silence import detect_nonsilent
+from aubio import source, tempo
+from numpy import median, diff
 
 class Genre(object):
     """
@@ -71,6 +74,40 @@ class Genre(object):
             avgChange += abs(newArr[i] - newArr[i-1])
         avgChange = avgChange/len(newArr)
         return avgChange
+
+    """
+    Calculates Energy of a song file
+    """
+    def energy(self):     
+        maxLoudness = self.sound.dBFS # Max loundeness for threshold
+        minLoudness = int(60000 / 240.0) # Minimum threshold for sound (detect_silence documentation) (every 60 seconds)
+        nonsilent_times = detect_nonsilent(self.sound, minLoudness, maxLoudness) #calulates when sound is active
+        soundBetweenBeats = []
+        val = nonsilent_times[0][0]         
+                                     
+        for peak in nonsilent_times[1:]:
+            soundBetweenBeats.append(peak[0] - val)
+            val = peak[0]
+
+        soundBetweenBeats = sorted(soundBetweenBeats)
+        space = soundBetweenBeats[len(soundBetweenBeats) // 2] # Median energy between sound 
+        energy = 60000 / space #energy frequency per minute
+        return energy
+
+        """
+        sum = []
+        var = 0
+        for peak in nonsilent_times:
+            for block in peak:
+                var = var + block
+            sum.append(var)
+            var = 0
+        avg = 0
+        for i in range(len(nonsilent_times)):
+            avg = avg + sum[i]
+        avgEnergy = avg/len(nonsilent_times)
+        return avgEnergy
+        """
 
     """
     calculates beats per minute of the sound file
