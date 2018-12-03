@@ -113,6 +113,7 @@ class Genre(object):
     Calculates frequency ussing fourier transform (https://www.ritchievink.com/blog/2017/04/23/understanding-the-fourier-transform-by-example/)
     """
     def frequency(self):
+        return 0
 
     
     """
