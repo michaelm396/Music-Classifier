@@ -8,7 +8,7 @@ except ImportError:
 		raise
 from pydub.playback import play #pip install pyaudio
 from pydub.silence import detect_nonsilent
-from aubio import source, tempo
+#from aubio import source, tempo
 from numpy import median, diff
 
 class Genre(object):
@@ -108,7 +108,13 @@ class Genre(object):
         avgEnergy = avg/len(nonsilent_times)
         return avgEnergy
         """
-        
+    
+    """
+    Calculates frequency ussing fourier transform (https://www.ritchievink.com/blog/2017/04/23/understanding-the-fourier-transform-by-example/)
+    """
+    def frequency(self):
+
+    
     """
     plays song file (on PC)
     """
