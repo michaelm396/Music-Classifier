@@ -108,16 +108,7 @@ class Genre(object):
         avgEnergy = avg/len(nonsilent_times)
         return avgEnergy
         """
-
-    """
-    calculates beats per minute of the sound file
-    """
-    def beats_per_minute(self):
-        measures = 1
-        beat = 1
-        self.bpm = round(60000/((float(self.durationlen/beat)/measures)/4),2)
-        return self.bpm
-
+        
     """
     plays song file (on PC)
     """
