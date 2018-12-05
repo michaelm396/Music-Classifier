@@ -9,7 +9,7 @@ except ImportError:
 from pydub.playback import play #pip install pyaudio
 from pydub.silence import detect_nonsilent
 #from aubio import source, tempo
-from numpy import median, diff
+#from numpy import median, diff
 
 class Genre(object):
     """
