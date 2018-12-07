@@ -1,6 +1,7 @@
 from simpleKnnClassifier import knn
 from parseAudioFile import songToFeatures
 import os
+import pdb
 
 def main():
     #go through songs in data set and construct train and test lists
@@ -16,11 +17,11 @@ def main():
                 if (song != ".DS_Store"):
                     try:
                         L = songToFeatures("Songs/train/"+g+"/"+song,g)
-                        test += [L]
+                        train += [L]
                     except:
                         continue
 
-    testGenreList = os.listdir("Songs/test")                    
+    testGenreList = os.listdir("Songs/test") 
     for g in testGenreList:
         if (g != ".DS_Store"):
             genreSongs = os.listdir("Songs/test/"+g)
@@ -28,7 +29,7 @@ def main():
                 if (song != ".DS_Store"):
                     try:
                         L = songToFeatures("Songs/test/"+g+"/"+song,g)
-                        train += [L]
+                        test += [L]
                     except:
                         continue
 

@@ -85,7 +85,7 @@ def knn(train,test,k):
             correctNumber += 1
 
         outputList += [(currClass,bestClass)]
-
+    pdb.set_trace()
     print(correctNumber/totalNumber)
     return outputList
 

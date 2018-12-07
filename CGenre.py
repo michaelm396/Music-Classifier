@@ -9,7 +9,8 @@ except ImportError:
 from pydub.playback import play #pip install pyaudio
 from pydub.silence import detect_nonsilent
 #from aubio import source, tempo
-#from numpy import median, diff
+import numpy.fft
+import array
 
 class Genre(object):
     """
@@ -41,10 +42,11 @@ class Genre(object):
         return self.durationlen
 
     """
-    obtains the frame_rate of mp3 file
+    obtains the frame_rate (sample period) of mp3 file
     """
     def frame_rate(self):
         self.framerate = self.sound.frame_rate
+        self.framerate = self.framerate
         return self.framerate
 
     """
@@ -80,7 +82,7 @@ class Genre(object):
     """
     def energy(self):     
         maxLoudness = self.sound.dBFS # Max loundeness for threshold
-        minLoudness = int(60000 / 240.0) # Minimum threshold for sound (detect_silence documentation) (every 60 seconds)
+        minLoudness = int(60000 / 240.0) # Minimum threshold for sound (detect_silence documentation) (every 60 seconds) (240 frq)
         nonsilent_times = detect_nonsilent(self.sound, minLoudness, maxLoudness) #calulates when sound is active
         soundBetweenBeats = []
         val = nonsilent_times[0][0]         
@@ -91,31 +93,40 @@ class Genre(object):
 
         soundBetweenBeats = sorted(soundBetweenBeats)
         space = soundBetweenBeats[len(soundBetweenBeats) // 2] # Median energy between sound 
-        energy = 60000 / space #energy frequency per minute
+        energy = 60000 / space #energy per minute (milliseconds)
         return energy
 
-        """
-        sum = []
+    """
+    sum = []
+    var = 0
+    for peak in nonsilent_times:
+        for block in peak:
+            var = var + block
+        sum.append(var)
         var = 0
-        for peak in nonsilent_times:
-            for block in peak:
-                var = var + block
-            sum.append(var)
-            var = 0
-        avg = 0
-        for i in range(len(nonsilent_times)):
-            avg = avg + sum[i]
-        avgEnergy = avg/len(nonsilent_times)
-        return avgEnergy
-        """
+    avg = 0
+    for i in range(len(nonsilent_times)):
+        avg = avg + sum[i]
+    avgEnergy = avg/len(nonsilent_times)
+    return avgEnergy
+    """
     
     """
-    Calculates frequency ussing fourier transform (https://www.ritchievink.com/blog/2017/04/23/understanding-the-fourier-transform-by-example/)
+    Calculates the DFT using fast fourier transform algorithm (https://www.ritchievink.com/blog/2017/04/23/understanding-the-fourier-transform-by-example/)
+        Returns: Average frequency coefficient over the time interval
     """
-    def frequency(self):
-        return 0
+    def frequency_fft(self):
+        signal = self.sound.get_array_of_samples() #returns the raw_data as an array of samples (signal) in milliseconds
+        shiftedsignal = numpy.right_shift(signal, 1) #reduces ampltitude of samples in order to equalize the sound
+        shiftedsignalarray = array.array(self.sound.array_type, shiftedsignal)
+        numberofsignals = len(shiftedsignalarray)
+        Fk = numpy.fft.fft(shiftedsignalarray)/numberofsignals #returns normalized FFT
+        nK = numpy.fft.fftfreq(numberofsignals)
+        idx = numpy.argmax(numpy.abs(Fk)) #peak of frequency coefficient
+        nK = nK[idx]
+        freq_in_hertz = abs(nK * self.sound.frame_rate)
+        return freq_in_hertz
 
-    
     """
     plays song file (on PC)
     """
