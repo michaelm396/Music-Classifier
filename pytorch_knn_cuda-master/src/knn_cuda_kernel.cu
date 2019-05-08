@@ -1,13 +1,3 @@
-/** Modifed version of knn-CUDA from https://github.com/vincentfpgarcia/kNN-CUDA
- * The modifications are
- *      removed texture memory usage
- *      removed split query KNN computation
- *      added feature extraction with bilinear interpolation
- *
- * Last modified by Christopher B. Choy <chrischoy@ai.stanford.edu> 12/23/2016
- */
-
-// Includes
 #include <cstdio>
 #include "cuda.h"
 
@@ -170,20 +160,6 @@ __global__ void cuInsertionSort(float *dist, long *ind, int width, int height, i
 }
 
 
-/**
-  * Computes the square root of the first line (width-th first element)
-  * of the distance matrix.
-  *
-  * @param dist    distance matrix
-  * @param width   width of the distance matrix
-  * @param k       number of neighbors to consider
-  */
-__global__ void cuParallelSqrt(float *dist, int width, int k){
-    unsigned int xIndex = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned int yIndex = blockIdx.y * blockDim.y + threadIdx.y;
-  if (xIndex<width && yIndex<k)
-    dist[yIndex*width + xIndex] = sqrt(dist[yIndex*width + xIndex]);
-}
 
 
 //-----------------------------------------------------------------------------------------------//
@@ -234,8 +210,6 @@ void knn_device(float* ref_dev, int ref_nb, float* query_dev, int query_nb,
   cuInsertionSort<<<g_256x1, t_256x1, 0, stream>>>(dist_dev, ind_dev,
       query_nb, ref_nb, k);
 
-  // Kernel 3: Compute square root of k first elements
-  cuParallelSqrt<<<g_k_16x16,t_k_16x16, 0, stream>>>(dist_dev, query_nb, k);
 
 #if DEBUG
   unsigned int  size_of_float = sizeof(float);
@@ -245,9 +219,6 @@ void knn_device(float* ref_dev, int ref_nb, float* query_dev, int query_nb,
   long*  idx_host  = new long[query_nb * k];
 
   // Memory copy of output from device to host
-  cudaMemcpy(&dist_host[0], dist_dev,
-      query_nb * k *size_of_float, cudaMemcpyDeviceToHost);
-
   cudaMemcpy(&idx_host[0], ind_dev,
       query_nb * k * size_of_long, cudaMemcpyDeviceToHost);
 
