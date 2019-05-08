@@ -51,4 +51,4 @@ def knn(train,test,k):
                 classVotes[response] = 1
         sortedVotes = sorted(classVotes.iteritems(), key=operator.itemgetter(1), reverse=True)
         test_y[y]=sortedVotes[0][0]
-        return test_y
+    return test_y
