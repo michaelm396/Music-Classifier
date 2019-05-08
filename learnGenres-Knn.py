@@ -1,4 +1,4 @@
-from simpleKnnClassifier import knn
+from knnCuda import knn
 from parseAudioFile import songToFeatures
 import os
 from sklearn.svm import SVC
