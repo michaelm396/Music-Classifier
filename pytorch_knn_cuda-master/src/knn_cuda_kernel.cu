@@ -18,71 +18,43 @@
   * @param dim   dimension of points = height of matrices A and B
   * @param AB    pointer on the matrix containing the wA*wB distances computed
   */
-__global__ void cuComputeDistanceGlobal( float* A, int wA,
-    float* B, int wB, int dim, float* AB){
 
-  // Declaration of the shared memory arrays As and Bs used to store the sub-matrix of A and B
-  __shared__ float shared_A[BLOCK_DIM][BLOCK_DIM];
-  __shared__ float shared_B[BLOCK_DIM][BLOCK_DIM];
+__global__ void EuclidianDistances( float* A, int n,
+    float* B, int m, int dim, float* C )
+{
+        // SIZE is equal to 128
+	__shared__ float accumResult[dim];
+	float sA;
+	float sB;
 
-  // Sub-matrix of A (begin, step, end) and Sub-matrix of B (begin, step)
-  __shared__ int begin_A;
-  __shared__ int begin_B;
-  __shared__ int step_A;
-  __shared__ int step_B;
-  __shared__ int end_A;
+        // MAPPING
+	int bx = blockIdx.x;  // n
+	int by = blockIdx.y;  // m
+	int ty = threadIdx.y; // dim
+	int tx = threadIdx.x; // 1
 
-  // Thread index
-  int tx = threadIdx.x;
-  int ty = threadIdx.y;
 
-  // Other variables
-  float tmp;
-  float ssd = 0;
+	sA = A [bx * n + ty];
+	sB = B [by * m + ty];
+	__syncthreads();
 
-  // Loop parameters
-  begin_A = BLOCK_DIM * blockIdx.y;
-  begin_B = BLOCK_DIM * blockIdx.x;
-  step_A  = BLOCK_DIM * wA;
-  step_B  = BLOCK_DIM * wB;
-  end_A   = begin_A + (dim-1) * wA;
 
-    // Conditions
-  int cond0 = (begin_A + tx < wA); // used to write in shared memory
-  int cond1 = (begin_B + tx < wB); // used to write in shared memory & to computations and to write in output matrix
-  int cond2 = (begin_A + ty < wA); // used to computations and to write in output matrix
+	accumResult[ty] = (sA - sB)*(sA - sB);
+	__syncthreads();
 
-  // Loop over all the sub-matrices of A and B required to compute the block sub-matrix
-  for (int a = begin_A, b = begin_B; a <= end_A; a += step_A, b += step_B) {
-    // Load the matrices from device memory to shared memory; each thread loads one element of each matrix
-    if (a/wA + ty < dim){
-      shared_A[ty][tx] = (cond0)? A[a + wA * ty + tx] : 0;
-      shared_B[ty][tx] = (cond1)? B[b + wB * ty + tx] : 0;
-    }
-    else{
-      shared_A[ty][tx] = 0;
-      shared_B[ty][tx] = 0;
-    }
 
-    // Synchronize to make sure the matrices are loaded
-    __syncthreads();
-
-    // Compute the difference between the two matrixes; each thread computes one element of the block sub-matrix
-    if (cond2 && cond1){
-      for (int k = 0; k < BLOCK_DIM; ++k){
-        tmp = shared_A[k][ty] - shared_B[k][tx];
-        ssd += tmp*tmp;
-      }
-    }
-
-    // Synchronize to make sure that the preceding computation is done before loading two new sub-matrices of A and B in the next iteration
-    __syncthreads();
-  }
-
-  // Write the block sub-matrix to device memory; each thread writes one element
-  if (cond2 && cond1)
-    AB[(begin_A + ty) * wB + begin_B + tx] = ssd;
+	// Parallel tree-reduction
+	for (int i = dim/2 ; i > 0 ; i >>= 1)
+ {
+  if (ty < pas)
+			accumResult[ty]	+= accumResult [i + ty];
+	__syncthreads();
+ }
+ if ((threadIdx.y == 0))
+		C [bx * m + by] = accumResult[ty];
+	__syncthreads();
 }
+
 
 
 /**
@@ -162,10 +134,6 @@ __global__ void cuInsertionSort(float *dist, long *ind, int width, int height, i
 
 
 
-//-----------------------------------------------------------------------------------------------//
-//                                   K-th NEAREST NEIGHBORS                                      //
-//-----------------------------------------------------------------------------------------------//
-
 /**
   * K nearest neighbor algorithm
   * - Initialize CUDA
@@ -190,6 +158,7 @@ void knn_device(float* ref_dev, int ref_nb, float* query_dev, int query_nb,
   // Grids ans threads
   dim3 g_16x16(query_nb/16, ref_nb/16, 1);
   dim3 t_16x16(16, 16, 1);
+  dim3 t_k_16x16(dim,1,1);
   if (query_nb%16 != 0) g_16x16.x += 1;
   if (ref_nb  %16 != 0) g_16x16.y += 1;
   //
@@ -198,9 +167,8 @@ void knn_device(float* ref_dev, int ref_nb, float* query_dev, int query_nb,
   if (query_nb%256 != 0) g_256x1.x += 1;
 
    // Kernel 1: Compute all the distances
-  cuComputeDistanceGlobal<<<g_16x16, t_16x16, 0, stream>>>(ref_dev, ref_nb,
+   EuclidianDistances<<<g_16x16, t_k_16x16, 0, stream>>>(ref_dev, ref_nb,
       query_dev, query_nb, dim, dist_dev);
-
   // Kernel 2: Sort each column
   cuInsertionSort<<<g_256x1, t_256x1, 0, stream>>>(dist_dev, ind_dev,
       query_nb, ref_nb, k);
