@@ -197,12 +197,7 @@ void knn_device(float* ref_dev, int ref_nb, float* query_dev, int query_nb,
   dim3 t_256x1(256, 1, 1);
   if (query_nb%256 != 0) g_256x1.x += 1;
 
-  dim3 g_k_16x16(query_nb/16, k/16, 1);
-  dim3 t_k_16x16(16, 16, 1);
-  if (query_nb%16 != 0) g_k_16x16.x += 1;
-  if (k  %16 != 0) g_k_16x16.y += 1;
-
-  // Kernel 1: Compute all the distances
+   // Kernel 1: Compute all the distances
   cuComputeDistanceGlobal<<<g_16x16, t_16x16, 0, stream>>>(ref_dev, ref_nb,
       query_dev, query_nb, dim, dist_dev);
 
