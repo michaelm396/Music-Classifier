@@ -5,7 +5,7 @@
 
 // Constants used by the program
 #define BLOCK_DIM                      16
-#define DEBUG                          0
+
 
 /**
   * Computes the distance between two matrix A (reference points) and
@@ -210,21 +210,4 @@ void knn_device(float* ref_dev, int ref_nb, float* query_dev, int query_nb,
   cuInsertionSort<<<g_256x1, t_256x1, 0, stream>>>(dist_dev, ind_dev,
       query_nb, ref_nb, k);
 
-
-#if DEBUG
-  unsigned int  size_of_float = sizeof(float);
-  unsigned long size_of_long  = sizeof(long);
-
-  float* dist_host = new float[query_nb * k];
-  long*  idx_host  = new long[query_nb * k];
-
-  // Memory copy of output from device to host
-  cudaMemcpy(&idx_host[0], ind_dev,
-      query_nb * k * size_of_long, cudaMemcpyDeviceToHost);
-
-  int i = 0;
-  for(i = 0; i < 100; i++){
-    printf("IDX[%d]: %d\n", i, (int)idx_host[i]);
-  }
-#endif
 }
