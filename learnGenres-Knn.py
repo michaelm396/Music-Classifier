@@ -1,7 +1,6 @@
 from knnCuda import knn
 from parseAudioFile import songToFeatures
 import os
-from sklearn.svm import SVC
 import pdb
 
 def main():
@@ -9,7 +8,15 @@ def main():
 
     train = []
     test = []
-
+    
+    TEST = open("TEST_DATA.csv")
+    reader = csv.reader(TEST)
+    test = list(reader)
+    
+    TRAIN = open("TRAINING_DATA.csv")
+    reader2 = csv.reader(TRAIN)
+    train = list(reader2)
+    """
     trainGenreList = os.listdir("Songs/train")
     for g in trainGenreList:
         if (g != ".DS_Store"):
@@ -33,7 +40,7 @@ def main():
                         test += [L]
                     except:
                         continue
-
+    """
     print(test)
     #print(songToFeatures("Songs/pop/Single-Ladies.mp3","pop"))
 
