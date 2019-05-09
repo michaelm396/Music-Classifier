@@ -3,6 +3,7 @@ from parseAudioFile import songToFeatures
 import os
 import pdb
 from sklearn.svm import SVC
+import csv
 
 def main():
     #go through songs in data set and construct train and test lists
@@ -29,7 +30,23 @@ def main():
     xTest1000 = []
     yTest1000 = []
 
-    trainGenreList = os.listdir("Songs/train")
+    #trainGenreList = os.listdir("Songs/train")
+    TRAIN = open("TRAINING_DATA.csv")
+    reader2 = csv.reader(TRAIN)
+    train = list(reader2)
+    for L in train:
+        xTrain1 += [L[:len(L)-1]]
+        yTrain1 += [L[len(L)-1]]
+
+        xTrain20 += [L[:len(L)-1]]
+        yTrain20 += [L[len(L)-1]]
+
+        xTrain100 += [L[:len(L)-1]]
+        yTrain100 += [L[len(L)-1]]
+
+        xTrain1000 += [L[:len(L)-1]]
+        yTrain1000 += [L[len(L)-1]]
+    """
     for g in trainGenreList:
         if (g != ".DS_Store"):
             genreSongs = os.listdir("Songs/train/"+g)
@@ -52,8 +69,25 @@ def main():
                         
                     except:
                         continue
+    """
+    #testGenreList = os.listdir("Songs/test") 
+    TEST = open("TEST_DATA.csv")
+    reader = csv.reader(TEST)
+    test = list(reader)
+    for K in test:
+        xTest1 += [K[:len(K)-1]]
+        yTest1 += [K[len(K)-1]]
 
-    testGenreList = os.listdir("Songs/test") 
+        xTest20 += [K[:len(K)-1]]
+        yTest20 += [K[len(K)-1]]
+
+        xTest100 += [K[:len(K)-1]]
+        yTest100 += [K[len(K)-1]]
+
+        xTest1000 += [K[:len(K)-1]]
+        yTest1000 += [K[len(K)-1]]
+
+    """
     for g in testGenreList:
         if (g != ".DS_Store"):
             genreSongs = os.listdir("Songs/test/"+g)
@@ -75,7 +109,7 @@ def main():
                         yTest1000 += [L[len(L)-1]]
                     except:
                         continue
-
+    """
     print(test)
     #print(songToFeatures("Songs/pop/Single-Ladies.mp3","pop"))
     
