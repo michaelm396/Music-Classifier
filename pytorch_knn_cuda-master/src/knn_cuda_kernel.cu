@@ -156,11 +156,8 @@ void knn_device(float* ref_dev, int ref_nb, float* query_dev, int query_nb,
     int dim, int k, float* dist_dev, long* ind_dev, cudaStream_t stream){
 
   // Grids ans threads
-  dim3 g_16x16(query_nb/16, ref_nb/16, 1);
-  dim3 t_16x16(16, 16, 1);
+  dim3 g_16x16(query_nb, ref_nb, 1);
   dim3 t_k_16x16(dim,1,1);
-  if (query_nb%16 != 0) g_16x16.x += 1;
-  if (ref_nb  %16 != 0) g_16x16.y += 1;
   //
   dim3 g_256x1(query_nb/256, 1, 1);
   dim3 t_256x1(256, 1, 1);
